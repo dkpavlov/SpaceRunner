@@ -5,42 +5,11 @@
             [play-clj.ui :refer :all]
             [apples.utils :refer :all]
             [apples.map :refer :all]
-            [apples.entity-utils :refer :all]))
+            [apples.entity-utils :refer :all]
+            [apples.entity :refer :all]))
     
 (declare apples main-screen menu-screen score-screan)            
             
-(def enemies ["fish" "fly" "slime" "snail"])
-
-(defn slide-enemie [enemie]
-  (cond 
-    (> 0 (:x enemie)) (assoc (texture "snail1.png") :x 800 :y 0 :type "enemie" :phase 1)
-    (= 1 (:phase enemie)) (assoc (texture "snail2.png") :x (- 3 (:x enemie)) :y 0 :type "enemie" :phase 2) 
-    (= 2 (:phase enemie)) (assoc (texture "snail1.png") :x (- 3 (:x enemie)) :y 0 :type "enemie" :phase 1)
-    :else enemie))
-
-(defn slide-hill [entity]
-  (if (> 0 (:x entity))
-    (assoc (texture "hill_large.png") :x 800 :y 70 :type "hill" :enemy? true)
-    (assoc entity :x (- (:x entity) 3))))
-
-(defn jump [entity]
-  (if (= (:jump entity) 0)
-    (assoc (texture "p_jump.png") :x 50 :y 70 :jump 1 :player? true)
-    entity))
-
-(defn move [entity]
-  (let [y (:y entity)
-        phase (:jump entity)
-        walk (:walk entity)]
-    (cond
-      (and (= phase 2) (> y 0)) (assoc entity :y (- y 4) :player? true)
-      (and (= phase 2) (= y 0)) (assoc (texture "p.png") :x 50 :y 0 :jump 0 :walk 0 :player? true)
-      (and (< y 200) (= phase 1)) (assoc entity :y (+ y 4) :player? true)
-      (and (= y 200) (= phase 1)) (assoc entity :jump 2 :player? true)
-      :else (if (= (inc walk) 11)
-              (assoc (texture "p_1.png") :x 50 :y 70 :jump 0 :walk 1 :player? true)
-              (assoc (texture (str "p_" (inc walk) ".png")) :x 50 :y 70  :jump 0 :walk (inc walk) :player? true)))))
-
 (defscreen menu-screen
   :on-show
   (fn [screen entities]
@@ -115,18 +84,18 @@
   :on-show
   (fn [screen entities]
     (update! screen :renderer (stage))
-    (let [player (assoc (texture "p_1.png") :x 50 :y 70 :jump 0 :walk 1 :player? true)
-          hill (assoc (texture "hill_large.png") :x 800 :y 710 :type "hill" :enemy? true)
+    (let [player (assoc (texture "p_1.png") :x 50 :y floor-x :jump 0 :walk 1 :player? true)
+          enemy (assoc (texture "hill_large_1.png") :x 701 :y floor-x :enemy? true :phase 1 :type "hill_large")
           grass (create-map-texture)]
-      (into [player hill] grass)))
+      (into [player enemy] grass)))
   :on-render
   (fn [screen entities]
     (clear! 255 255 255 1)
     (render! screen entities)
     (let [player (move (first entities))
-          hill (slide-hill (get-enemy entities))
+          enemy (move-enemy (get-enemy entities))
           grass (slide-map (get-grass entities))]
-       (into [player hill] grass)))
+       (into [player enemy] grass)))
   :on-key-down
   (fn [screen entities]
     (cond
