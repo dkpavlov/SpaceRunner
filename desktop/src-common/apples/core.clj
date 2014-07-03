@@ -84,7 +84,7 @@
   :on-show
   (fn [screen entities]
     (update! screen :renderer (stage))
-    (let [player (assoc (texture "p_1.png") :x 50 :y floor-x :jump 0 :walk 1 :player? true)
+    (let [player (assoc (texture "p_1.png") :x 50 :y floor-x :jump 0 :walk 1 :player? true :image 1 :frame 1)
           enemy (assoc (texture "hill_large_1.png") :x 701 :y floor-x :enemy? true :phase 1 :type "hill_large")
           grass (create-map-texture)]
       (into [player enemy] grass)))
@@ -92,7 +92,7 @@
   (fn [screen entities]
     (clear! 255 255 255 1)
     (render! screen entities)
-    (let [player (move (first entities))
+    (let [player (move (get-player entities))
           enemy (move-enemy (get-enemy entities))
           grass (slide-map (get-grass entities))]
        (into [player enemy] grass)))

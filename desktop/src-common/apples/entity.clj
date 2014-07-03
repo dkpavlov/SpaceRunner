@@ -27,12 +27,16 @@
 (defn move [entity]
   (let [y (:y entity)
         phase (:jump entity)
-        walk (:walk entity)]
+        walk (:walk entity)
+        frame (:frame entity)
+        image (:image entity)]
     (cond
       (and (= phase 2) (> y floor-x)) (assoc entity :y (- y 4) :player? true)
-      (and (= phase 2) (= y floor-x)) (assoc (texture "p.png") :x 50 :y floor-x :jump 0 :walk 0 :player? true)
+      (and (= phase 2) (= y floor-x)) (assoc (texture "p.png") :x 50 :y floor-x :jump 0 :walk 0 :player? true :image 1 :frame 1)
       (and (< y 390) (= phase 1)) (assoc entity :y (+ y 4) :player? true)
       (and (= y 390) (= phase 1)) (assoc entity :jump 2 :player? true)
-      :else (if (= (inc walk) 11)
-              (assoc (texture "p_1.png") :x 50 :y floor-x :jump 0 :walk 1 :player? true)
-              (assoc (texture (str "p_" (inc walk) ".png")) :x 50 :y floor-x  :jump 0 :walk (inc walk) :player? true)))))
+      :else (if (> (/ frame 5) 1)
+              (if (= image 10)
+                (assoc (texture "p_1.png") :x 50 :y floor-x :jump 0 :walk 1 :player? true :image 1 :frame 1)
+                (assoc (texture (str "p_" (inc image) ".png")) :x 50 :y floor-x :jump 0 :walk 1 :player? true :image (inc image) :frame 1))
+              (assoc entity :frame (inc frame))))))

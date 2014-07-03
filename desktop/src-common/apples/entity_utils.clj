@@ -52,7 +52,7 @@
           phase (:phase e)]
       (if (< x -70)
         (generate-new-enemys 1)
-        (slide-left x y type phase))))))
+        (assoc e :x (- (:x e) 2)))))))
 
 ;;Problem with to much ISeq
     
