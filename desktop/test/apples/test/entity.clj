@@ -35,8 +35,8 @@
 
 (deftest map 
   (is (= (count (get-grass one-player)) 3))
-  (is (list? (get-grass one-player))))
+  (is (coll? (get-grass one-player))))
 
 (deftest enemy 
   (is (= (count (get-enemy one-player)) 2))
-  (is (list? (get-enemy one-player))))
+  (is (coll? (get-enemy one-player))))
