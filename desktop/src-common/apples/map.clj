@@ -1,7 +1,6 @@
 (ns apples.map
   (:require [play-clj.core :refer :all]
-            [play-clj.g2d :refer :all]
-            [play-clj.g2d-physics :refer :all]))
+            [play-clj.g2d :refer :all]))
 
 (def cloud-y [270 540 310 410])
 
