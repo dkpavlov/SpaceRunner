@@ -4,7 +4,7 @@
             [play-clj.g2d-physics :refer :all]
             [play-clj.ui :refer :all]
             [apples.utils :refer :all]
-            [apples.map :refer :all]
+            [apples.map :as m]
             [apples.entity-utils :refer :all]
             [apples.entity :refer :all]))
     
@@ -84,26 +84,30 @@
   :on-show
   (fn [screen entities]
     (update! screen :renderer (stage))
-    (let [player (assoc (texture "p_1.png") :x 50 :y floor-x :jump 0 :walk 1 :player? true :image 1 :frame 1)
-          enemy (assoc (texture "hill_large_1.png") :x 701 :y floor-x :enemy? true :phase 1 :type "hill_large")
-          grass (create-map-texture)]
-      (into [player enemy] grass)))
+    (let [player (create-player)
+          enemy (generate-new-enemys 1)
+          map (m/create-map)]
+      (into [player enemy] map)))
   :on-render
   (fn [screen entities]
-    (clear! 255 255 255 1)
+    (clear! 125 206 253 0)
     (render! screen entities)
-    (let [player (move (get-player entities))
-          enemy (move-enemy (get-enemy entities))
-          grass (slide-map (get-grass entities))]
-       (into [player enemy] grass)))
+    (let [player (get-player entities)
+          enemy (get-enemy entities)
+          map (get-grass entities)]
+      (if (game-over player enemy)
+        (set-screen! apples end-screen)
+        (into [(move player) (move-enemy enemy)] (m/slide-map map)))))
   :on-key-down
   (fn [screen entities]
-    (cond
-      (= (:key screen) (key-code :space))
-      (let [player (jump (first entities))
-            hill (rest entities)]
-          (into [player] hill))
-      :else nil))
+    (let [player (get-player entities)
+          non-player (rest entities)]
+      (cond
+        (= (:key screen) (key-code :space))
+        (into [(jump player)] non-player)
+        (= (:key screen) (key-code :control-left))
+        (into [(squat player)] non-player)
+        :else nil)))
   :on-begin-contact
   (fn [screen entities]
     (let [entity (first-entity screen entities)])
