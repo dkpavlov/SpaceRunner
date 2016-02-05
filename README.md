@@ -1,6 +1,6 @@
 ## Introduction
 
-A play-clj game in which you are brave alien explorer visiting earth-like planet, 
+A [play-clj](https://github.com/oakes/play-clj) game in which you are brave alien explorer visiting earth-like planet, 
 but a strange creature is trying to eat you, so you must make your way to your spaceship.
 
 ## Contents
